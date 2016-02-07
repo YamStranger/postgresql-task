@@ -1,14 +1,14 @@
-/*
-courses.fetch_missed_pages
-*/
 DROP FUNCTION
 IF EXISTS courses.fetch_missed_pages (BIGINT,VARCHAR);
 
-CREATE FUNCTION courses.fetch_missed_pages(input_test_id BIGINT, version_name VARCHAR(500) DEFAULT '') RETURNS refcursor AS $$
-DECLARE
-    ref_cursor refcursor;
+CREATE FUNCTION courses.fetch_missed_pages(input_test_id BIGINT, version_name VARCHAR(500) DEFAULT '') 
+    RETURNS TABLE(student_name VARCHAR,
+									version_name_val VARCHAR,
+									index INTEGER)
+   AS
+$$
 BEGIN
-    OPEN ref_cursor FOR 
+    RETURN QUERY
 				WITH filtered_pages AS (
 					 SELECT
 							cour.name AS version_name,
@@ -45,27 +45,5 @@ BEGIN
 				LEFT JOIN filtered_pages once_more ON once_more.page_id = pg_all. ID
 				WHERE
 					 once_more.page_id IS NULL;
-    RETURN ref_cursor;
 END;
 $$ LANGUAGE plpgsql;
-
-
-
-
-
---to call
--- need to be in a transaction to use cursors.
-/*
-ROLLBACK TRANSACTION;
-BEGIN;
-SELECT courses.fetch_missed_pages(1);
-
-      reffunc2
---------------------
- <unnamed cursor 1>
-(1 row)
-
-FETCH ALL IN "<unnamed portal 3>";
-COMMIT;
-
-*/
