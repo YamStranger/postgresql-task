@@ -2,38 +2,70 @@
 courses.fetch_missed_pages
 */
 DROP FUNCTION
-IF EXISTS courses.fetch_missed_pages ();
+IF EXISTS courses.fetch_missed_pages (BIGINT,VARCHAR);
 
-CREATE FUNCTION courses.fetch_missed_pages() RETURNS refcursor AS $$
+CREATE FUNCTION courses.fetch_missed_pages(input_test_id BIGINT, version_name VARCHAR(500) DEFAULT '') RETURNS refcursor AS $$
 DECLARE
     ref_cursor refcursor;
 BEGIN
     OPEN ref_cursor FOR 
-with filtered_pages as (select cour.name as version_name, pg.version_id as version_id, pg.index, stdp.page_id, stdp.id as student_page_id, std.name as student_name from courses.student_page stdp
-	inner join courses.page pg on pg.id=stdp.page_id
-	inner join courses.version cour on cour.id=pg.version_id
-	inner join university.student std on std.id=stdp.student_id
-) 
-select fil.student_name,fil.version_name, fil.index from courses.page pg_all 
-		inner join filtered_pages fil 
-			on fil.version_id= pg_all.version_id
-		left join filtered_pages once_more 
-			on once_more.page_id=pg_all.id
-		where once_more.page_id is null; 
+				WITH filtered_pages AS (
+					 SELECT
+							cour.name AS version_name,
+							pg.version_id AS version_id,
+							pg.index,
+							stdp.page_id,
+							stdp.id AS student_page_id,
+							std.name AS student_name
+					 FROM
+							courses.student_page stdp
+					 INNER JOIN courses.page pg ON pg.id = stdp.page_id
+					 INNER JOIN courses.version cour ON cour.id = pg.version_id
+					 INNER JOIN university.student std ON std.id = stdp.student_id
+					 WHERE
+							cour.test_id = input_test_id
+					 AND CASE
+									WHEN CHAR_LENGTH (version_name) > 1 THEN
+										CASE
+											WHEN cour. NAME = version_name THEN
+													1
+										ELSE
+													2
+										END
+									ELSE
+										1
+									END = 1
+				) SELECT
+					 fil.student_name,
+					 fil.version_name,
+					 fil.index
+				FROM
+					 courses.page pg_all
+				INNER JOIN filtered_pages fil ON fil.version_id = pg_all.version_id
+				LEFT JOIN filtered_pages once_more ON once_more.page_id = pg_all. ID
+				WHERE
+					 once_more.page_id IS NULL;
     RETURN ref_cursor;
 END;
 $$ LANGUAGE plpgsql;
 
+
+
+
+
 --to call
 -- need to be in a transaction to use cursors.
-/**BEGIN;
-SELECT courses.fetch_missed_pages();
+/*
+ROLLBACK TRANSACTION;
+BEGIN;
+SELECT courses.fetch_missed_pages(1);
 
       reffunc2
 --------------------
  <unnamed cursor 1>
 (1 row)
 
-FETCH ALL IN "<unnamed portal 2>";
+FETCH ALL IN "<unnamed portal 3>";
 COMMIT;
+
 */
