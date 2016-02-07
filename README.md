@@ -113,6 +113,25 @@ cd plpgunit/install
 
 task implemented in ```courses.fetch_missed_pages (BIGINT,VARCHAR)``` function
 
+you can run it using query: 
+
+```
+select * from courses.fetch_missed_pages(2)
+
+```
+
+or 
+```
+select * from courses.fetch_missed_pages(2,'some value')
+```
+
+result will be:
+
+```
+student_name        | version_name_val    |  indexes
+test student name   | test version name   |  1,2,3
+```
+
 ###after all executed you can run this commands to insert test data:
 
 ```
