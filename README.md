@@ -12,7 +12,8 @@ or
 
 I like when code well tested, and plsql should be tested too. So lets begin: 
 
-#Installing docker on Ubuntu 15:
+###Installing docker on Ubuntu 15:
+```
  sudo su
  apt-get update
  apt-get install apt-transport-https ca-certificates
@@ -25,45 +26,65 @@ I like when code well tested, and plsql should be tested too. So lets begin:
  service docker start
  docker run hello-world
  reboot
- 
-#Configuring your_user to run docker without user 
+```
+
+###Configuring your_user to run docker without user 
+```
 sudo usermod -aG docker your_user
 reboot
 docker run hello-world
+```
  
-#Configuring docker run on boot
+###Configuring docker run on boot
+```
 sudo systemctl enable docker
 reboot
 docker info
+```
 
-#installing and running postgresql in docker (docker_name: postgres, postgres_user=postgres, postgres_password=postgres, postgres_db=task, port 5432)
+###installing and running postgresql in docker
+(docker_name: postgres, postgres_user=postgres, postgres_password=postgres, postgres_db=task, port 5432)
 docker run --name postgres -p 127.0.0.1:5432:5432 -e POSTGRES_PASSWORD=postgres -e POSTGRES_DB=task -e POSTGRES_USER=postgres -d postgres
 docker ps
-# result should be something like this: 
-#CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
-#b8afdffd35c4        postgres            "/docker-entrypoint.s"   52 seconds ago      Up 51 seconds       5432/tcp            9.5.0
 
-#to stop docker you should run (where postgres is docker container name)
+result should be something like this: 
+```
+CONTAINER ID        IMAGE               COMMAND                  CREATED             STATUS              PORTS               NAMES
+b8afdffd35c4        postgres            "/docker-entrypoint.s"   52 seconds ago      Up 51 seconds       5432/tcp            9.5.0
+```
+
+to stop docker you should run (where postgres is docker container name)
+```
 docker stop postgres
+```
 
-#to run docker
+to run docker
+```
 docker run -d postgres
+```
 
-#installing postgreSQL on Ubuntu 
+###installing postgreSQL on Ubuntu 
+```
 sudo apt-get install postgresql-client
+```
 
-#get access to postgres
+###get access to postgres
+```
 export PGPASSWORD=postgres
 psql -h localhost -U postgres -d task
+```
 
-#install plpguint
+###install plpguint
+```
 git clone https://github.com/mixerp/plpgunit.git
 cd plpgunit/install
 \i 0.uninstall-unit-test.sql
 \i 1.install-unit-test.sql
+```
 
 
-# install database schema 
+### install database schema, tables, so on
+```
 \i university/schemas/courses.sql
 \i university/schemas/university.sql
 \i university/domains/numeric_id.sql
@@ -72,6 +93,11 @@ cd plpgunit/install
 \i university/versions/tables/courses.version.sql
 \i university/pages/tables/courses.page.sql
 \i university/pages/tables/courses.student_page.sql
+\i university/funcitons/fetch_missed_pages.sql
+```
+
+### to run unit tests to check table structure and function:
+```
 \i university/unit_tests/university_students.sql
 \i university/unit_tests/university_students_indexes.sql
 \i university/unit_tests/courses_tests.sql
@@ -83,11 +109,11 @@ cd plpgunit/install
 \i university/unit_tests/courses_pages.sql
 \i university/unit_tests/courses_pages_sub_indexes.sql
 \i university/unit_tests/unit_tests.sql
-\i university/unit_tests/fetch_missed_pages.sql
+```
 
-#task implemented in courses.fetch_missed_pages (BIGINT,VARCHAR) function
+task implemented in ```courses.fetch_missed_pages (BIGINT,VARCHAR)``` function
 
-#after all executed you can run this commands to insert test data:
+###after all executed you can run this commands to insert test data:
 
 --- find 10 not used test ids
 drop table IF EXISTS  tests_id_test; 
