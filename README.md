@@ -111,18 +111,18 @@ cd plpgunit/install
 \i university/unit_tests/unit_tests.sql
 ```
 
-task implemented in ```courses.fetch_missed_pages (BIGINT,VARCHAR)``` function
+task implemented in ```get_missing_pages (int,text)``` function
 
 you can run it using query: 
 
 ```
-select * from courses.fetch_missed_pages(2)
+select * from get_missing_pages(2)
 
 ```
 
 or 
 ```
-select * from courses.fetch_missed_pages(2,'some value')
+select * from get_missing_pages(2,'some value')
 ```
 
 result will be:
