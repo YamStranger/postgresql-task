@@ -115,6 +115,7 @@ task implemented in ```courses.fetch_missed_pages (BIGINT,VARCHAR)``` function
 
 ###after all executed you can run this commands to insert test data:
 
+```
 --- find 10 not used test ids
 drop table IF EXISTS  tests_id_test; 
 create TEMPORARY table tests_id_test  as 		
@@ -207,7 +208,7 @@ insert into courses.student_page (id,page_id, student_id, status)
 
 -- now we have all data
 
-
+```
 
 
 
